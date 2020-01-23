@@ -1,3 +1,7 @@
 <h2>
-    Don't forget to do <b> npm install </b> after cloning.
+    Node practice
 </h2>
+
+<p>
+    Don't forget to do <b> <i> npm install </i> </b> after cloning.
+</p>
