@@ -1,3 +1,3 @@
-<h1>
+<h2>
     Don't forget to do <b> npm install </b> after cloning.
-</h1>
+</h2>
