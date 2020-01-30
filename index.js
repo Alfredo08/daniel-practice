@@ -1,9 +1,10 @@
 let express = require( 'express' );
-
+let bodyParser = require( 'body-parser' );
+let jsonParser = bodyParser.json();
 
 let app = express();
 
-let students = [{
+const students = [{
     firstName : "Michael",
     lastName : "Angelus",
     id : 1730939
@@ -66,7 +67,77 @@ app.get( '/api/getByFirstName/:name', ( req, res ) => {
     }
 });
 
+app.post( '/api/createStudent', jsonParser, ( req, res ) => {
+    let {id, firstName, lastName} = req.body;
 
+    let newStudent = {
+        id : Number( id ),
+        firstName,
+        lastName
+    };
+
+    if( ! newStudent || ! firstName || ! lastName ){
+        res.statusMessage = "You are missing a field in the body 'id, firstName, lastName";
+        return res.status( 406 ).send();
+    }
+    else{
+        
+        let result = students.find( student => {
+            if ( student.id === Number(id) ){
+                return student;
+            }
+        });
+
+        if( result ){
+            res.statusMessage = "That id is already in our student list.";
+            return res.status( 409 ).send();
+        }
+        else{
+            students.push( newStudent );
+            return res.status( 201 ).json( students[students.length - 1] );
+        }
+    }
+
+    
+
+});
+
+app.put( '/api/updateStudent/:id', jsonParser, ( req, res ) => {
+    let idParam = Number( req.params.id );
+    let {firstName, lastName} = req.body;
+
+    let currentObj = {firstName, lastName};
+
+    if( !firstName && !lastName ){
+        res.statusMessage = "You need to send at least either the 'firstName' or 'lastName'. ";
+        return res.status(406).send();
+    } 
+    let theIndex;
+
+    let result = students.find( ( student, index ) => {
+        if ( student.id === idParam ){
+            theIndex = index;
+            return student;
+        }
+    });
+    
+    if( !result ){
+        res.statusMessage = "Student not found.";
+        return res.status(404).send();
+    }
+
+    for( let key in currentObj ){
+
+        if( currentObj[ key ] !== undefined ){
+            students[ theIndex ][ key ] = currentObj[ key ]; 
+        }
+    } 
+
+    return res.status( 202 ).json( students[ theIndex ]);
+
+
+
+})
 
 app.listen( 8080, () => {
     console.log( "App running in port 8080");
